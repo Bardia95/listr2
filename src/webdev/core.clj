@@ -2,7 +2,8 @@
   (:require [ring.adapter.jetty :as jetty]
             [ring.middleware.reload :refer [wrap-reload]]
             [compojure.core :refer [defroutes GET]]
-            [compojure.route :refer [not-found]]))
+            [compojure.route :refer [not-found]]
+            [ring.handler.dump :refer [handle-dump]]))
 
 (defn greet [req]
   {:status 200
@@ -19,10 +20,19 @@
    :body "My name is Bardia and this is an app I'm building to learn how to code web apps in Clojure"
    :headers {}})
 
+(defn yo [req]
+  (let [name (get-in req [:route-params :name])]
+    {:status 200
+     :body (str "Yo " name)
+     :headers {}}))
+
+
 (defroutes app
   (GET "/" [] greet)
   (GET "/goodbye" [] goodbye)
   (GET "/about" [] about)
+  (GET "/request" [] handle-dump)
+  (GET "/yo/:name" [] yo)
   (not-found "Page not found."))
 
 (defn -main [port]
